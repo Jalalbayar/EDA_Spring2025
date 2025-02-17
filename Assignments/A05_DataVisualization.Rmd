@@ -102,7 +102,8 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 #commands such as xlab and ylab to give a name to x and y-axis. Geom-smooth to 
 #draw a line(s).
 
-ggplot(Peter.Paul.chem.nutrient, aes(x = tp_ug, y = po4, color = lakename)) +
+Peter.Paul.TotalP.po4 <- ggplot(Peter.Paul.chem.nutrient,
+                                aes(x = tp_ug, y = po4, color = lakename)) +
   geom_point() +
   ylim(0, 45) +
   labs(color = "Lake") +
@@ -110,6 +111,7 @@ ggplot(Peter.Paul.chem.nutrient, aes(x = tp_ug, y = po4, color = lakename)) +
   xlab("Totol P(ug)") +
   ylab("Phosphate") +
   mytheme
+print(Peter.Paul.TotalP.po4)
 
 
 ```
@@ -124,33 +126,81 @@ Tips:
 * Individual plots can have different sizes when combined using `cowplot`.
 
 ```{r Create boxplots}
-#5 Boxplot
-Temp <- ggplot(Peter.Paul.chem.nutrient) +
-  geom_boxplot(aes(x=month, y = temperature_C, color = lakename)) +
+#5 Boxplot 
+# I draw two different commands for each variables to see which function is more visually more effective. 
+
+Peter.Paul.temp <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(
+    aes(x=month, 
+        y = temperature_C, 
+        color = lakename)) +
   mytheme +
   labs(color = "Lake") +
-  xlab(expression())
-  print(Temp)
-  
-TP <- ggplot(Peter.Paul.chem.nutrient) +
-  geom_boxplot(aes(x=month, y = tp_ug, color = lakename)) +
+  xlab(expression()) 
+  print(Peter.Paul.temp)
+
+Peter.Paul.Total.P <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(
+    aes(x=month, 
+        y = tp_ug, 
+        color = lakename)) +
     mytheme +
   theme(legend.position = "none") +
   xlab(expression())
-  print(TP)
-  
-TN <- ggplot(Peter.Paul.chem.nutrient) +
-  geom_boxplot(aes(x=month, y = tn_ug, color = lakename)) +
+  print(Peter.Paul.Total.P)
+
+Peter.Paul.Total.N <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(
+    aes(x=month, 
+        y = tn_ug, 
+        color = lakename)) +
   mytheme +
   theme(legend.position = "none")
-  print(TN)
-  
-  
-plot_Temp_TP_TN <- plot_grid(Temp + ylab("Temp_C"),
-                             TP, 
-                             TN, nrow = 3)
-print(plot_Temp_TP_TN)
+  print(Peter.Paul.Total.N)
 
+
+Combined.Peter.Paul.Temp.P.N <- plot_grid(Peter.Paul.temp + ylab("Temp_C"),
+                                Peter.Paul.Total.P, 
+                                Peter.Paul.Total.N, nrow = 3)
+print(Combined.Peter.Paul.Temp.P.N)
+
+# A duplicate graph to see individual months distribution of the required varibles.
+
+Peter.Paul.Temp_duplicate <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(
+    aes(x=factor(month,levels=1:12,labels=month.abb), 
+        y = temperature_C, 
+        color = lakename)) +
+  mytheme +
+  labs(color = "Lake") +
+  xlab(expression())
+  print(Peter.Paul.Temp_duplicate)  
+  
+Peter.Paul.Total.P_duplicate <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(
+    aes(x=factor(month,levels=1:12,labels=month.abb), 
+        y = tp_ug, 
+        color = lakename)) +
+    mytheme +
+  theme(legend.position = "none") +
+  xlab(expression()) 
+  print(Peter.Paul.Total.P_duplicate)
+  
+Peter.Paul.Total.N_duplicate <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(
+    aes(x=factor(month,levels=1:12,labels=month.abb), 
+        y = tn_ug, 
+        color = lakename)) +
+  mytheme +
+  theme(legend.position = "none") +
+  xlab("Month")
+  print(
+Peter.Paul.Total.N_duplicate)
+
+Combined.Peter.Paul.Temp.P.N_duplicate <- plot_grid(Peter.Paul.Temp_duplicate + ylab("Temp_C"),
+                             Peter.Paul.Total.P_duplicate, 
+                             Peter.Paul.Total.N_duplicate, nrow = 3)
+print(Combined.Peter.Paul.Temp.P.N_duplicate)
 
 
 ```
@@ -177,7 +227,8 @@ Litter.needles <- ggplot(subset(Litter,
   mytheme
 print(Litter.needles)
 
-#7
+#7 In the following command, I removed the legend because we can see different facets with legend's name.
+
 Litter.needles.facet <- ggplot(subset(Litter, 
   functionalGroup == "Needles"),
   aes(x = collectDate, y = dryMass, color = nlcdClass)) +
