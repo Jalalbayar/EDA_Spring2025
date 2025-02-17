@@ -1,7 +1,7 @@
 ---
 title: "Assignment 5: Data Visualization"
-author: "Student Name"
-date: "Fall 2024"
+author: "Jalal Bayar"
+date: "Spring 2025"
 output: pdf_document
 geometry: margin=2.54cm
 fig_height: 3
@@ -31,9 +31,25 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Vi
 2. Make sure R is reading dates as date format; if not change the format to date.
 
 ```{r initialize project}
-#1 
+#1 Loading packages
+library(tidyverse); library(lubridate); library(here); library(cowplot)
+getwd()
+Processed_data <- ("./Data/Processed_KEY")
 
-#2 
+#read in data files
+
+Peter.Paul.chem.nutrient <- read.csv(
+  here(Processed_data, "NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"),
+       stringsAsFactors = TRUE)
+
+Litter <- read.csv(
+  here(Processed_data, "NEON_NIWO_Litter_mass_trap_Processed.csv"),
+       stringsAsFactors = TRUE)
+
+#2 command for date as Date object
+Peter.Paul.chem.nutrient$sampledate <- ymd(Peter.Paul.chem.nutrient$sampledate)
+
+Litter$collectDate <- ymd(Litter$collectDate)
 
 ```
 ## Define your theme
@@ -44,8 +60,35 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Vi
  * Axis ticks/gridlines
  * Legend
 
-```{r build plot theme}
+```{r build plot theme} 
+#
+library(ggridges)
+
+#Enhanced color ramps
+library(viridis)
+library(RColorBrewer)
+library(colormap)
+
+#Add pre-set themes <--NEW
+library(ggthemes)
 #3
+
+mytheme <- theme_classic() + 
+  theme(
+    line = element_line(
+      color='red',
+      linewidth = 1
+    ),
+    legend.background = element_rect(
+      color='grey',
+      fill = 'white'
+    ),
+    legend.title = element_text(
+      color='black'
+    ),
+    legend.position = "top"
+  )
+
 
 ```
 
@@ -54,8 +97,20 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 4. [NTL-LTER] Plot total phosphorus (`tp_ug`) by phosphate (`po4`), with separate aesthetics for Peter and Paul lakes. Add line(s) of best fit using the `lm` method. Adjust your axes to hide extreme values (hint: change the limits using `xlim()` and/or `ylim()`).
 
-```{r plot total P vs PO4}
-#4 
+```{r, fig.height = 3, fig.width = 4, warning = FALSE}
+#4 Function for Scatter plot and use 'ylim' to limit y-axis. Also, some other 
+#commands such as xlab and ylab to give a name to x and y-axis. Geom-smooth to 
+#draw a line(s).
+
+ggplot(Peter.Paul.chem.nutrient, aes(x = tp_ug, y = po4, color = lakename)) +
+  geom_point() +
+  ylim(0, 45) +
+  labs(color = "Lake") +
+  geom_smooth(method = lm) +
+  xlab("Totol P(ug)") +
+  ylab("Phosphate") +
+  mytheme
+
 
 ```
 
@@ -69,13 +124,44 @@ Tips:
 * Individual plots can have different sizes when combined using `cowplot`.
 
 ```{r Create boxplots}
-#5 
+#5 Boxplot
+Temp <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(aes(x=month, y = temperature_C, color = lakename)) +
+  mytheme +
+  labs(color = "Lake") +
+  xlab(expression())
+  print(Temp)
+  
+TP <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(aes(x=month, y = tp_ug, color = lakename)) +
+    mytheme +
+  theme(legend.position = "none") +
+  xlab(expression())
+  print(TP)
+  
+TN <- ggplot(Peter.Paul.chem.nutrient) +
+  geom_boxplot(aes(x=month, y = tn_ug, color = lakename)) +
+  mytheme +
+  theme(legend.position = "none")
+  print(TN)
+  
+  
+plot_Temp_TP_TN <- plot_grid(Temp + ylab("Temp_C"),
+                             TP, 
+                             TN, nrow = 3)
+print(plot_Temp_TP_TN)
+
+
 
 ```
 
 Question: What do you observe about the variables of interest over seasons and between lakes? 
 
-> Answer: 
+> Answer: Overall, the concentration of TP is ranging from 0 to 150 while the
+concentration of TN ranging from 0 to 3000 for both the Paul and Peter lake. The 
+temp_C ranged from 0 to around 25 degree C. The data distibution is more condensed 
+and abundant at the concentration 0 to 30 ug for TP, and 0 to 400 ug for TN across 
+three month period. The temp_C were observed over 5 month period. 
 
 6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the "Needles" functional group. Plot the dry mass of needle litter by date and separate by NLCD class with a color aesthetic. (no need to adjust the name of each land use)
 
@@ -83,12 +169,28 @@ Question: What do you observe about the variables of interest over seasons and b
 
 ```{r Plot litter}
 #6
-
+Litter.needles <- ggplot(subset(Litter, 
+  functionalGroup == "Needles"),
+  aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+    geom_boxplot() +
+  labs(color = "Sample Type") +
+  mytheme
+print(Litter.needles)
 
 #7
+Litter.needles.facet <- ggplot(subset(Litter, 
+  functionalGroup == "Needles"),
+  aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+    geom_boxplot(size = 1) +
+  facet_wrap(facets = vars(nlcdClass), nrow=1,ncol=3) +
+  ylim(0, 40) +
+  xlab("Year") +
+  mytheme +
+  theme(legend.position = "none")
+print(Litter.needles.facet)
 
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer:
+> Answer: Plot 7 is more effective because we can see clearly the three sampling sites (facets) with the distribution in each year. However, in case of plot 6, we see the distribution across three years as a whole not separately. Plot 6 cannot gives us complete information.
