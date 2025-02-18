@@ -227,6 +227,16 @@ Litter.needles <- ggplot(subset(Litter,
   mytheme
 print(Litter.needles)
 
+#Following is the scatter plot of the same variables
+Litter.needles.duplicate <- ggplot(subset(Litter, 
+  functionalGroup == "Needles"),
+  aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+    geom_point() +
+  labs(color = "Sample Type") +
+  mytheme
+print(Litter.needles.duplicate)
+
+
 #7 In the following command, I removed the legend because we can see different facets with legend's name.
 
 Litter.needles.facet <- ggplot(subset(Litter, 
@@ -240,8 +250,19 @@ Litter.needles.facet <- ggplot(subset(Litter,
   theme(legend.position = "none")
 print(Litter.needles.facet)
 
+#Following is the scatter plot of the same variables
+Litter.needles.facet.duplicate <- ggplot(subset(Litter, 
+  functionalGroup == "Needles"),
+  aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+    geom_point(size = 1) +
+  facet_wrap(facets = vars(nlcdClass), nrow=1,ncol=3) +
+  ylim(0, 40) +
+  xlab("Year") +
+  mytheme +
+  theme(legend.position = "none") 
+print(Litter.needles.facet.duplicate)
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer: Plot 7 is more effective because we can see clearly the three sampling sites (facets) with the distribution in each year. However, in case of plot 6, we see the distribution across three years as a whole not separately. Plot 6 cannot gives us complete information.
+> Answer: Plot 7 is more effective because we can see clearly the three sampling sites (facets) with the distribution across three years as a whole not separately.
