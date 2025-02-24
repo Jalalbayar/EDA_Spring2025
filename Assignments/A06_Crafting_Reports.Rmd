@@ -38,7 +38,7 @@ Using markdown, create a 2-column table beneath the `Table: EPA Air Quality` lin
 
 
 
-\begin{center}Table1: EPA Air Quality\end{center}
+Table: EPA Air Quality
 
 | Item Name | Value |
 |-------:|:------|
@@ -155,7 +155,8 @@ box_plot_18ozone <- ggplot(epa_ozone_2018) +
                  labels=month.abb),
                    y = Ozone)) +
   xlab("Month") +
-  ylab(expression("Concentration ("*mu*g/m^3*")"))
+  ylab(expression("Concentration ("*mu*g/m^3*")")) +
+  ggtitle("Monthly Ozone concentrations (2018)")
   
                 
 print(box_plot_18ozone)
@@ -171,7 +172,8 @@ box_plot_19ozone <- ggplot(epa_ozone_2019) +
                  labels=month.abb),
                    y = Ozone)) +
   xlab("Month") +
-  ylab(expression("Concentration ("*mu*g/m^3*")"))
+  ylab(expression("Concentration ("*mu*g/m^3*")")) +
+  ggtitle("Monthly Ozone concentrations (2019)")
 
 print(box_plot_19ozone)
 
@@ -185,4 +187,4 @@ print(box_plot_19ozone)
 Add a table of contents and list of figures to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository.
 
 ## Git Repository
-
+<https://github.com/Jalalbayar/EDA_Spring2025>
